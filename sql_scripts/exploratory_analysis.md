@@ -161,6 +161,7 @@ FROM orders_with_lag
 ORDER BY delivr_month ASC;
 ```
 # ARPU, Histograms, and Percentiles
+Since a KPI is a single number, it can't describe how data is distributed. In this chapter, you'll learn about unit economics, histograms, bucketing, and percentiles, which you can use to spot the variance in user behaviors.
 ## Average Revenue per User
 ```sql
 SELECT
