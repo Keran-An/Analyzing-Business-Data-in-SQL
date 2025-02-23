@@ -32,7 +32,7 @@ In the initial data preparation phase, we performed the following tasks:
 3. Data cleaning and formatting.
 
 ### Exploratory Data Analysis (EDA)
-`sql_scripts/exploratory_analysis.sql`
+`sql_scripts/exploratory_analysis.md`
 
 EDA involved exploring the sales data to answer key questions, such as:
 
@@ -41,7 +41,7 @@ EDA involved exploring the sales data to answer key questions, such as:
 - What are the peak sales periods?
 
 ### Data Analysis  
-`sql_scripts/business_insights.sql`
+`sql_scripts/business_insights.md`
   
 Include some interesting code/features worked with
 1. Revenue, Cost, Profit and CTEs
