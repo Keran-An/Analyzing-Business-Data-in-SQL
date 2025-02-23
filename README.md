@@ -5,6 +5,10 @@
 - [Project Overview](#project-overview)
 - [Data Sources](#data-sources)
 - [Tools](#tools)
+- [Data Cleaning](#data-cleaning)
+- [Exploratory Data Analysis (EDA)](#exploratory-data-analysis(EDA))
+- [Data Analysis](#data-analysis)
+- [Results](#results)
 - [Recommendations](#recommendations)
 
 ### Project Overview
@@ -13,14 +17,13 @@ This data analysis project aims to provide insights into the sales performance o
 
 ### Data Sources
 
-- The dataset used in this project comes from **[DataCamp]**, which includes transactional and customer data.
-- [Refer to `data_sources/dataset_description.md` for details.]
+- The dataset used in this project comes from **[DataCamp]**[`data_sources/dataset_description.md`], which includes transactional and customer data.
 
 ### Tools
 
 - SQL Server - Data Analysis
 
-### Data Cleaning/Preparation
+### Data Cleaning
 `sql_scripts/data_cleaning.sql`
   
 In the initial data preparation phase, we performed the following tasks:
@@ -47,7 +50,7 @@ Include some interesting code/features worked with
 4. produce an executive report using pivoting
 
 
-### Results/Findings
+### Results
 
 1. The analysis results are summarized as follows:
 2. The company's sales have been steadily increasing over the past year, with a noticeable peak during the holiday season.
