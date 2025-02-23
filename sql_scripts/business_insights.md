@@ -1,23 +1,16 @@
+# Introduction to Business Insights Analysis
+In the Business Insights section, we move beyond general exploration to perform deeper, actionable analyses. Here, our goal is to leverage SQL to extract detailed insights that directly support strategic business decisions. The analyses conducted here focus on profitability, customer behavior, retention, and segmentation—essential factors for business growth.
+
+# Table of Contents
 - [Revenue, Cost, and Profit](#revenue-cost-and-profit)
-	- [Revenue per Week](#revenue-per-week)
-	- [Top Meals by Cost](#top-meals-by-cost)
-	- [Using CTEs](#using-ctes)
 	- [Profit per Eatery](#profit-per-eatery)
 - [User-Centric KPIs](#user-centric-kpis)
-	- [Registration by Month](#registration-by-month)
-	- [Monthly Active Users(MAU)](#monthly-active-users-mau)
-	- [MAU Monitor](#mau-monitor)
-	- [Order Growth Rate](#order-growth-rate)
 	- [Retention Rate](#retention-rate)
 - [ARPU, Histograms, and Percentiles](#arpu-histograms-and-percentiles)
-	- [Average Revenue per User](#average-revenue-per-user)
-	- [Histogram of Revenue](#histogram-of-revenue)
-	- [Histogram of Orders](#histogram-of-orders)
 	- [Bucketing Users by Revenue/Orders](#bucketing-users-by-revenue-orders)
 	- [Revenue Quartiles](#revenue-quartiles)
 	- [Interquartile Range](#interquartile-range)
 - [Generating an Executive Report](#generating-an-executive-report)
-	- [Formating Dates](#formatting-dates)
 	- [Rank Users by Their Count of Orders](#rank-users-by-their-count-of-orders)
 	- [Pivoting User Revenue by Month](#pivoting-user-revenue-by-month)
 	- [Costs](#costs)
@@ -25,51 +18,10 @@
 
 # Revenue, Cost, and Profit
 Profit is one of the first things people use to assess a company's success. In this chapter, you'll learn how to calculate revenue and cost, and then combine the two calculations using Common Table Expressions to calculate profit.
-## Revenue per Customer
-```sql  -- Calculate revenue
-SELECT SUM(meals.meal_price * orders.order_quantity) AS revenue
-  FROM meals
-  JOIN orders ON meals.meal_id = orders.meal_id
--- Keep only the records of customer ID 15
-WHERE orders.user_id = 15;
-```
-## Revenue per Week
-```sql
-SELECT DATE_TRUNC('week', order_date) :: DATE AS delivr_week,
-       -- Calculate revenue
-       SUM(meals.meal_price * orders.order_quantity) AS revenue
-  FROM meals
-  JOIN orders ON meals.meal_id = orders.meal_id
--- Keep only the records in June 2018
-WHERE orders.order_date >= '2018-06-01' AND orders.order_date < '2018-07-01'
-GROUP BY delivr_week
-ORDER BY delivr_week ASC;
-```
-## Top Meals by Cost
-```sql
-SELECT
-  -- Calculate cost per meal ID
-  meals.meal_id,
-  SUM(meals.meal_cost * stock.stocked_quantity) AS cost
-FROM meals
-JOIN stock ON meals.meal_id = stock.meal_id
-GROUP BY meals.meal_id
-ORDER BY cost DESC
--- Only the top 5 meal IDs by purchase cost
-LIMIT 5;
-```
-## Using CTEs
-```sql
-SELECT
-  -- Calculate cost
-  DATE_TRUNC('month', stocking_date)::DATE AS delivr_month,
-  SUM(stock.stocked_quantity * meals.meal_cost) AS cost
-FROM meals
-JOIN stock ON meals.meal_id = stock.meal_id
-GROUP BY delivr_month
-ORDER BY delivr_month ASC;
-```
+
 ## Profit per Eatery
+- Analyzes profitability at the restaurant or store level.
+- Helps management identify which eateries perform best financially and informs decisions on resource allocation or operational improvements.
 ```sql
 WITH revenue AS (
   -- Calculate revenue per eatery
@@ -123,119 +75,10 @@ ORDER BY revenue.delivr_month ASC;
 ```
 # User-Centric KPIs
 Financial KPIs like profit are important, but they don't speak to user activity and engagement. In this chapter, you'll learn how to calculate the registrations and active users KPIs, and use window functions to calculate the user growth and retention rates.
-## Registration by Month
-```sql
-SELECT
-  -- Get the earliest (minimum) order date by user ID
-  user_id,
-  MIN(order_date) AS reg_date
-FROM orders
-GROUP BY user_id
--- Order by user ID
-ORDER BY user_id ASC;
-```
-## Monthly Active Users(MAU)
-```sql
-SELECT
-  -- Truncate the order date to the nearest month
-  DATE_TRUNC('month', orders.order_date) :: DATE AS delivr_month,
-  -- Count the unique user IDs
-  COUNT(DISTINCT user_id) AS mau
-FROM orders
-GROUP BY delivr_month
--- Order by month
-ORDER BY delivr_month ASC;
-```
-## Registration Running Total
-```sql
-WITH reg_dates AS (
-  SELECT
-    user_id,
-    MIN(order_date) AS reg_date
-  FROM orders
-  GROUP BY user_id)
 
-SELECT
-  -- Select the month and the registrations
-  DATE_TRUNC('month', reg_date) :: DATE AS delivr_month,
-  COUNT(DISTINCT user_id) AS regs
-FROM reg_dates
-GROUP BY delivr_month
--- Order by month in ascending order
-ORDER BY delivr_month ASC;
-```
-## MAU Monitor
-```sql
-WITH mau AS (
-  SELECT
-    DATE_TRUNC('month', order_date) :: DATE AS delivr_month,
-    COUNT(DISTINCT user_id) AS mau
-  FROM orders
-  GROUP BY delivr_month)
-
-SELECT
-  -- Select the month and the MAU
-  delivr_month,
-  mau,
-  COALESCE(
-    LAG(mau) OVER (ORDER BY delivr_month ASC),
-  0) AS last_mau
-FROM mau
-
--- write a query that returns a table of months and the deltas of each month's current and previous MAUs.
--- If the delta is negative, less users were active in the current month than in the previous month,
--- which triggers the monitor to raise a red flag so the Product team can investigate.
-SELECT
-  -- Calculate each month's delta of MAUs
-  delivr_month, 
-  mau - last_mau AS mau_delta
-FROM mau_with_lag
--- Order by month in ascending order
-ORDER BY delivr_month ASC;
-
---  Use the month-on-month (MoM) MAU growth rate over a raw delta of MAUs,
--- so that the MAU monitor can have more complex triggers,
--- like raising a yellow flag if the growth rate is -2% and a red flag if the growth rate is -5%.
-SELECT
-  -- Calculate the MoM MAU growth rates
-  delivr_month,
-  ROUND(
-    (mau - last_mau) :: NUMERIC/ last_mau,
-  2) AS growth
-FROM mau_with_lag
--- Order by month in ascending order
-ORDER BY delivr_month;
-```
-## Order Growth Rate
-```sql
-WITH orders AS (
-  SELECT
-    DATE_TRUNC('month', order_date) :: DATE AS delivr_month,
-    --  Count the unique order IDs
-    COUNT(DISTINCT order_id) AS orders
-  FROM orders
-  GROUP BY delivr_month),
-
-  orders_with_lag AS (
-  SELECT
-    delivr_month,
-    -- Fetch each month's current and previous orders
-    orders,
-    COALESCE(
-      LAG(orders) OVER (ORDER BY delivr_month ASC),
-    1) AS last_orders
-  FROM orders)
-
-SELECT
-  delivr_month,
-  -- Calculate the MoM order growth rate
-  ROUND(
-    (orders - last_orders) :: NUMERIC/ last_orders,
-  2) AS growth
-FROM orders_with_lag
-ORDER BY delivr_month ASC;
-```
 ## Retention Rate
+- Measures the percentage of customers who return to make additional purchases over time.
+- Critical for evaluating customer satisfaction and the effectiveness of customer retention initiatives.
 ```sql
 WITH user_monthly_activity AS (
   SELECT DISTINCT
@@ -260,83 +103,10 @@ ORDER BY previous.delivr_month ASC;
 
 # ARPU, Histograms, and Percentiles
 Since a KPI is a single number, it can't describe how data is distributed. In this chapter, you'll learn about unit economics, histograms, bucketing, and percentiles, which you can use to spot the variance in user behaviors.
-## Average Revenue per User
-```sql
-SELECT
-  -- Select the user ID and calculate revenue
-  user_id,
-  SUM(m.meal_price * o.order_quantity) AS revenue
-FROM meals AS m
-JOIN orders AS o ON m.meal_id = o.meal_id
-GROUP BY user_id;
-```
-## ARPU per Week
-```sql
-WITH kpi AS (
-  SELECT
-    -- Select the week, revenue, and count of users
-    DATE_TRUNC('week', order_date) :: DATE AS delivr_week,
-    SUM(o.order_quantity * m.meal_price) AS revenue,
-    COUNT(DISTINCT user_id) AS users
-  FROM meals AS m
-  JOIN orders AS o ON m.meal_id = o.meal_id
-  GROUP BY delivr_week)
 
-SELECT
-  delivr_week,
-  -- Calculate ARPU
-  ROUND(revenue :: NUMERIC/ GREATEST(users, 1),
-  2) AS arpu
-FROM kpi
--- Order by week in ascending order
-ORDER BY delivr_week ASC;
-```
-## Average Orders per User
-```sql
-WITH kpi AS (
-  SELECT
-    -- Select the count of orders and users
-    COUNT(DISTINCT order_id) AS orders,
-    COUNT(DISTINCT user_id) AS users
-  FROM orders)
-
-SELECT
-  -- Calculate the average orders per user
-  ROUND( orders :: NUMERIC/ GREATEST(users, 1),
-  2) AS arpu
-FROM kpi;
-```
-## Histogram of Revenue
-```sql
-WITH user_revenues AS (
-  SELECT
-    -- Select the user ID and revenue
-    user_id,
-    SUM(m.meal_price * o.order_quantity) AS revenue
-  FROM meals AS m
-  JOIN orders AS o ON m.meal_id = o.meal_id
-  GROUP BY user_id)
-
-SELECT
-  -- Return the frequency table of revenues by user
-  ROUND(revenue :: NUMERIC, -2) AS revenue_100,
-  COUNT(DISTINCT user_id) AS users
-FROM user_revenues
-GROUP BY revenue_100
-ORDER BY revenue_100 ASC;
-```
-## Histogram of Orders
-```sql
-SELECT
-  -- Select the user ID and the count of orders
-  user_id,
-  COUNT(DISTINCT order_id) AS orders
-FROM orders
-GROUP BY user_id
-ORDER BY user_id ASC
-LIMIT 5;
-```
 ## Bucketing Users by Revenue/Orders
+- Segments users into different groups based on revenue generated or frequency of orders.
+- Supports precision marketing by helping identify high-value customers, occasional users, or inactive segments.
 ```sql
 -- Bucketing Users by Revenue
 WITH user_revenues AS (
@@ -381,6 +151,8 @@ FROM user_orders
 GROUP BY order_group;
 ```
 ## Revenue Quartiles
+- Uses quartile-based analysis to understand revenue distribution across customers.
+- The interquartile range helps detect outliers, ensuring business decisions are based on representative data rather than extreme values.
 ```sql
 WITH user_revenues AS (
   -- Select the user IDs and their revenues
@@ -416,18 +188,9 @@ GROUP BY o.user_id;
 
 # Generating an Executive Report
 Executives often use the KPIs you've calculated in the three previous chapters to guide business decisions. In this chapter, you'll package the KPIs you've created into a readable report you can present to managers and executives.
-## Formatting Dates
-```sql
-SELECT DISTINCT
-  -- Select the order date
-  order_date,
-  -- Format the order date
-  TO_CHAR(order_date, 'FMDay DD, FMMonth YYYY') AS format_order_date
-FROM orders
-ORDER BY order_date ASC
-LIMIT 3;
-```
 ## Rank Users by Their Count of Orders
+- Ranks customers based on the frequency of their orders.
+- Useful for prioritizing customer support, loyalty programs, or promotional campaigns aimed at high-frequency customers.
 ```sql
 SELECT
   user_id,
@@ -438,6 +201,8 @@ WHERE order_date >= '2018-08-01' AND order_date <= '2018-08-31'
 GROUP BY user_id;
 ```
 ## Pivoting User Revenue by Month
+- Transforms data to clearly display user-level revenue trends over time.
+- Helps identify seasonal variations, user spending patterns, and areas requiring strategic interventions.
 ```sql
 -- Import tablefunc
 CREATE EXTENSION IF NOT EXISTS tablefunc;
