@@ -10,6 +10,8 @@
 - [Data Analysis](#data-analysis)
 - [Results](#results)
 - [Recommendations](#recommendations)
+- [Key SQL Skills Demonstrated](#key-SQL-skills-demonstrated)
+- [References](#references)
 
 ### Project Overview
 
