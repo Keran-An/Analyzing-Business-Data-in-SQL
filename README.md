@@ -1,7 +1,5 @@
 # Analyzing-Business-Data-in-SQL
 
-## Table of Contents
-
 - [Project Overview](#project-overview)
 - [Data Sources](#data-sources)
 - [Tools](#tools)
