@@ -1,32 +1,27 @@
 - [Revenue, Cost, and Profit](#revenue-cost-and-profit)
-- 	[Revenue per Customer](#revenue-per-customer)
-- 	[Revenue per Week](#revenue-per-week)
-- 	[Top Meals by Cost](#top-meals-by-cost)
-- 	[Using CTEs](#using-ctes)
-- 	[Profit per Eatery](#profit-per-eatery)
+	- [Revenue per Week](#revenue-per-week)
+	- [Top Meals by Cost](#top-meals-by-cost)
+	- [Using CTEs](#using-ctes)
+	- [Profit per Eatery](#profit-per-eatery)
 - [User-Centric KPIs](#user-centric-kpis)
-- 	[Registration by Month](#registration-by-month)
-- 	[Monthly Active Users(MAU)](#monthly-active-users-MAU)
-- 	[Registration Running Total](#registration-running-total)
-- 	[MAU Monitor](#mau-monitor)
-- 	[Order Growth Rate](#order-growth-rate)
-- 	[Retention Rate](#retention-rate)
+	- [Registration by Month](#registration-by-month)
+	- [Monthly Active Users(MAU)](#monthly-active-users-mau)
+	- [MAU Monitor](#mau-monitor)
+	- [Order Growth Rate](#order-growth-rate)
+	- [Retention Rate](#retention-rate)
 - [ARPU, Histograms, and Percentiles](#arpu-histograms-and-percentiles)
-- 	[Average Revenue per User](#average-revenue-per-user)
-- 	[ARPU per Week](#arpu-per-week)
-- 	[Average Orders per User](#average-orders-per-user)
-- 	[Histogram of Revenue](#histogram-of-revenue)
-- 	[Histogram of Orders](#histogram-of-orders)
-- 	[Bucketing Users by Revenue](#bucketing-users-by-revenue)
-- 	[Bucketing Users by Orders](#bucketing-users-by-orders)
-- 	[Revenue Quartiles](#revenue-quartiles)
-- 	[Interquartile Range](#interquartile-range)
+	- [Average Revenue per User](#average-revenue-per-user)
+	- [Histogram of Revenue](#histogram-of-revenue)
+	- [Histogram of Orders](#histogram-of-orders)
+	- [Bucketing Users by Revenue/Orders](#bucketing-users-by-revenue-orders)
+	- [Revenue Quartiles](#revenue-quartiles)
+	- [Interquartile Range](#interquartile-range)
 - [Generating an Executive Report](#generating-an-executive-report)
-- 	[Formating Dates](#formatting-dates)
-- 	[Rank Users by Their Count of Orders](#rank-users-by-their-count-of-orders)
-- 	[Pivoting User Revenue by Month](#pivoting-user-revenue-by-month)
-- 	[Costs](#costs)
-- 	[Executive Report](#executive-report)
+	- [Formating Dates](#formatting-dates)
+	- [Rank Users by Their Count of Orders](#rank-users-by-their-count-of-orders)
+	- [Pivoting User Revenue by Month](#pivoting-user-revenue-by-month)
+	- [Costs](#costs)
+	- [Executive Report](#executive-report)
 
 # Revenue, Cost, and Profit
 Profit is one of the first things people use to assess a company's success. In this chapter, you'll learn how to calculate revenue and cost, and then combine the two calculations using Common Table Expressions to calculate profit.
@@ -341,8 +336,9 @@ GROUP BY user_id
 ORDER BY user_id ASC
 LIMIT 5;
 ```
-## Bucketing Users by Orders
+## Bucketing Users by Revenue/Orders
 ```sql
+-- Bucketing Users by Revenue
 WITH user_revenues AS (
   SELECT
     -- Select the user IDs and the revenues they generate
@@ -362,9 +358,8 @@ SELECT
   COUNT(DISTINCT user_id) AS users
 FROM user_revenues
 GROUP BY revenue_group;
-```
-## Bucketing Users by Orders
-```sql
+
+-- Bucketing Users by Orders
 -- Store each user's count of orders in a CTE named user_orders
 WITH user_orders AS (
   SELECT
