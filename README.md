@@ -13,13 +13,11 @@ This data analysis project aims to provide insights into the sales performance o
 
 ### Data Sources
 
-Sales Data: The primary dataset used for this analysis is the "" file, containing detailed information from a fictional food delivery startup, modeled on data from real companies.
+Sales Data: The primary dataset used for this analysis is the "" file, containing detailed information from a fictional food delivery startup, modeled on data from real companies.[Download Here](https://assets.datacamp.com/production/repositories/4016/datasets/a9664117952bbb5e8697e9c95779e1961dc23841/delivr.sql)
 
 ### Tools
 
-- Excel - Data Cleaning
 - SQL Server - Data Analysis
-- Power BI - Creating Reports
 
 ### Data Cleaning/Preparation
 
@@ -38,7 +36,10 @@ EDA involved exploring the sales data to answer key questions, such as:
 ### Data Analysis
 
 Include some interesting code/features worked with
-
+1. Revenue, Cost, Profit and CTEs
+2. KPIs, active users growth and retention rates
+3. Economics: Data Distribution
+4. produce an executive report using pivoting
 ```sql
 SELECT * FROM table1
 WHERE cond = 2;
