@@ -13,7 +13,9 @@ This data analysis project aims to provide insights into the sales performance o
 
 ### Data Sources
 
-Sales Data: The primary dataset used for this analysis is the "" file, containing detailed information from a fictional food delivery startup, modeled on data from real companies.[Download Here](https://assets.datacamp.com/production/repositories/4016/datasets/a9664117952bbb5e8697e9c95779e1961dc23841/delivr.sql)
+- The dataset used in this project comes from **[DataCamp]**, which includes transactional and customer data.
+- [Refer to `data_sources/dataset_description.md` for details.]
+- [Download Here](https://assets.datacamp.com/production/repositories/4016/datasets/a9664117952bbb5e8697e9c95779e1961dc23841/delivr.sql)
 
 ### Tools
 
