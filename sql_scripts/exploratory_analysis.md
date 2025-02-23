@@ -1,10 +1,16 @@
+# Introduction to Exploratory Data Analysis (EDA)
+The goal of EDA is to quickly understand, summarize, and visualize the fundamental characteristics and patterns within our dataset.
+
+By using SQL to perform EDA, we'll gain insights into the data’s structure, distributions, trends, and basic metrics. This sets the foundation for deeper analysis and effective decision-making.
+
+# Table of Contents
 - [Revenue, Cost, and Profit](#revenue-cost-and-profit)
 	- [Revenue per Week](#revenue-per-week)
 	- [Top Meals by Cost](#top-meals-by-cost)
 - [User-Centric KPIs](#user-centric-kpis)
 	- [Registration by Month](#registration-by-month)
 	- [Monthly Active Users(MAU)](#monthly-active-users-mau)
-	- [MAU Monitor](#mau-monitor)
+		- [MAU Monitor](#mau-monitor)
 	- [Order Growth Rate](#order-growth-rate)
 - [ARPU, Histograms, and Percentiles](#arpu-histograms-and-percentiles)
 	- [Average Revenue per User](#average-revenue-per-user)
@@ -15,6 +21,7 @@
 Profit is one of the first things people use to assess a company's success. In this chapter, you'll learn how to calculate revenue and cost, and then combine the two calculations using Common Table Expressions to calculate profit.
 
 ## Revenue per Customer
+
 ```sql  -- Calculate revenue
 SELECT SUM(meals.meal_price * orders.order_quantity) AS revenue
   FROM meals
@@ -23,6 +30,8 @@ SELECT SUM(meals.meal_price * orders.order_quantity) AS revenue
 WHERE orders.user_id = 15;
 ```
 ## Revenue per Week
+- Examines how revenue changes on a weekly basis.
+- Helps identify sales trends, seasonal fluctuations, and peak periods.
 ```sql
 SELECT DATE_TRUNC('week', order_date) :: DATE AS delivr_week,
        -- Calculate revenue
@@ -35,6 +44,8 @@ GROUP BY delivr_week
 ORDER BY delivr_week ASC;
 ```
 ## Top Meals by Cost
+- Lists meals that have the highest associated costs.
+- Assists in identifying cost-intensive products or areas that may need cost optimization.
 ```sql
 SELECT
   -- Calculate cost per meal ID
@@ -49,6 +60,8 @@ LIMIT 5;
 ```
 # User-Centric KPIs
 ## Registration by Month
+- Tracks the number of new user registrations per month.
+- Important for understanding customer acquisition trends over time.
 ```sql
 SELECT
   -- Get the earliest (minimum) order date by user ID
@@ -60,6 +73,8 @@ GROUP BY user_id
 ORDER BY user_id ASC;
 ```
 ## Monthly Active Users(MAU)
+- Measures the number of unique users active in a given month.
+- Essential for tracking user engagement and retention over time.
 ```sql
 SELECT
   -- Truncate the order date to the nearest month
@@ -71,7 +86,7 @@ GROUP BY delivr_month
 -- Order by month
 ORDER BY delivr_month ASC;
 ```
-## MAU Monitor
+### MAU Monitor
 ```sql
 WITH mau AS (
   SELECT
@@ -114,6 +129,8 @@ FROM mau_with_lag
 ORDER BY delivr_month;
 ```
 ## Order Growth Rate
+- Monitors the percentage change in the number of orders between time periods.
+- Highlights business growth patterns or potential declines.
 ```sql
 WITH orders AS (
   SELECT
@@ -169,6 +186,8 @@ SELECT
 FROM kpi;
 ```
 ## Histogram of Revenue
+- Visualizes how revenue amounts are distributed across orders or customers.
+- Useful for quickly identifying typical revenue sizes and spotting outliers.
 ```sql
 WITH user_revenues AS (
   SELECT
@@ -188,6 +207,8 @@ GROUP BY revenue_100
 ORDER BY revenue_100 ASC;
 ```
 ## Histogram of Orders
+- Illustrates the frequency distribution of orders.
+- Helps understand how frequently customers purchase or how order volumes vary.
 ```sql
 SELECT
   -- Select the user ID and the count of orders
