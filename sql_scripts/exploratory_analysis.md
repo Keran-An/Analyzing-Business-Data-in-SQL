@@ -59,6 +59,7 @@ ORDER BY cost DESC
 LIMIT 5;
 ```
 # User-Centric KPIs
+Financial KPIs like profit are important, but they don't speak to user activity and engagement. In this chapter, you'll learn how to calculate the registrations and active users KPIs, and use window functions to calculate the user growth and retention rates.
 ## Registration by Month
 - Tracks the number of new user registrations per month.
 - Important for understanding customer acquisition trends over time.
